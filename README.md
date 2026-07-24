@@ -130,7 +130,7 @@ Results below.
 |---|---|
 | Table 5: 152k bilingual vocab (80k morpheme + 32k BPE, per language, for Amharic+Tigrinya) | 8,000 total vocab (600 morpheme + 1,400 BPE per language, across 4 languages) -- a deliberately smaller verification-scale run |
 | Table 6 / Appendix B: 5 morpheme categories -- PREFIX, ROOT, SUFFIX, INFIX, CLITIC (e.g. Tigre's `-ና` annotated as a CLITIC) | 3 categories only -- `Segmentation` has `prefix`/`root`/`suffix` fields, no infix or clitic. The real 206-entry Tigrinya gold file itself also only has these 3 fields. |
-| Table 3: MarianMT fine-tuned, BLEU/chrF++ on FLORES-200 (Amharic/Tigrinya) + 100-sentence OPUS subsets (all 4 languages) | Not attempted -- explicitly out of scope (see Limitations) |
+| Table 3: MarianMT fine-tuned, BLEU/chrF++ on FLORES-200 (Amharic/Tigrinya) + 100-sentence OPUS subsets (all 4 languages) | **Attempted in a companion project**: [MoVoC_MT](../MoVoC_MT/README.md) trains a from-scratch MarianMT (same architecture as the paper) bidirectionally on English-Amharic/English-Tigrinya using MoVoC_Tok, with Tigre held out for zero-shot eval. Real results: en-am 11.7/33.7 BLEU/chrF, am-en 20.5/45.6, en-ti 4.6/18.6, ti-en 10.6/31.9, Tigre zero-shot en-tig 2.7/19.4 and tig-en 7.6/32.2 (43-pair set, not FLORES-200 -- no Tigre FLORES exists) |
 | Sec 4.3: MarianMT training stats (3 epochs, loss 0.443→0.438, ~12h, 96.7 samples/sec) | Not this project's work -- this exact run was traced to a real `trainer_state.json` at `Paralleldata/results/checkpoint-524316` (524,316 steps, unrelated to MoVoC's own code) |
 
 Net effect: this project correctly implements the paper's **3.2 vocabulary-size
@@ -330,10 +330,16 @@ pytest ../tests/
   vocab here vs. 152,000 for the paper's Amharic+Tigrinya bilingual
   vocabulary) -- a deliberate choice for a fast verification pass, not a
   ceiling on what the corpora could support.
-- **No downstream MT comparison** (the paper's Table 3: BPE vs WordPiece vs
-  MoVoC-Tok fine-tuned separately per language) is reproduced here --
-  out of scope for this pass; see the project's implementation plan for
-  the reasoning.
+- **Downstream MT comparison is partial, not the paper's full design.**
+  [MoVoC_MT](../MoVoC_MT/README.md) trains one real from-scratch MarianMT
+  model with MoVoC_Tok (not the paper's BPE-vs-WordPiece-vs-MoVoC-Tok
+  three-way tokenizer comparison, and not per-language separate models) on
+  English-Amharic/English-Tigrinya, zero-shot evaluated on Tigre. Real
+  results exist (see the comparison table above) but this is a narrower
+  experimental design than the paper's Table 3, and En->X translation is
+  consistently weaker than X->En in every language pair tested, with
+  en->tig zero-shot showing real repetition-loop degeneration -- reported
+  as observed in MoVoC_MT's own README, not smoothed over here.
 
 
  
