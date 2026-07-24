@@ -157,6 +157,14 @@ data/geez_wordlist_hailay_annotated.txt            -> the 574 real Ge'ez words a
 
 No file implements 3.3 (constrained-merge BPE) -- see above.
 
+**`LLM_Probe/` is not part of this project.** It's a fully separate,
+independent repository (own remote: `github.com/hailaykidu/LLM-Probe`)
+that happens to sit on disk at `MoVoC/LLM_Probe/` -- gitignored here
+(`.gitignore:7`), not a submodule, not tracked by this repo's history,
+and not referenced by any file above. Its actual location/identity is
+its own GitHub repo, not a subdirectory of MoVoC; the nesting is
+filesystem coincidence, not a project relationship.
+
 ## Data cleaning (all four languages, verified)
 
 Corpora are reused as-is from the MoVoC_Tok project's cleaning pipeline
