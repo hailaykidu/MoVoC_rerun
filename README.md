@@ -289,6 +289,31 @@ python run_intrinsic_eval.py --bpe-vocab-size 1400 --max-lines 200000
 pytest ../tests/
 ```
 
+## Downstream MT reproduction (`mt_finetune/`)
+
+Reproduces the paper's own original single-pair MarianMT training
+setup, using the real `checkpoint-524316` tokenizer (63,050-vocab
+MarianTokenizer, `transformers==4.51.3`) rather than a reconstruction:
+
+- **en->ti**: matches `checkpoint-524316` field-for-field (architecture,
+  batch=8, seq_len=128, fp32, lr schedule) on the real raw NLLB en-ti
+  corpus (1,398,173 lines).
+- **en->am**: same architecture/tokenizer/seed, raw NLLB en-am data
+  capped to the same size for comparability. Disclosed tokenizer
+  mismatch (target.spm was fit on Tigrinya): measured 2.1% `<unk>` rate.
+- **en->gez**: same architecture/tokenizer/seed, using a genuine
+  verse-aligned English<->Classical Ge'ez parallel corpus
+  (`Bedru/Eng-Geez`, 2,107 rows) -- not synthetic. Measured 0.9% `<unk>`
+  rate with the same mismatched tokenizer.
+
+All three start from byte-identical seeded initial weights (verified),
+differing only in training data -- see `mt_finetune/README.md` for full
+provenance, checksums, and what's still not determinism-guaranteed.
+This directly narrows the "not per-language separate models" gap noted
+in Limitations below, though it's still not the paper's actual reported
+per-language results (those aren't independently reproduced here, only
+the training methodology).
+
 ## Limitations
 
 - **No real morphological analyzer is in use** for any language -- all four

@@ -29,3 +29,16 @@ results/*_segmented.txt
 logs/
 output.json
 read.py
+
+# mt_finetune/ -- downstream MT reproduction (see mt_finetune/README.md).
+# Model weights, raw/copied corpora, and SLURM logs are large binaries or
+# multi-hundred-MB text, regenerable via the scripts themselves -- not
+# committed, matching the convention used by MoVoC_MT and EnTiMT.
+mt_finetune/init_model*/
+mt_finetune/mt_output*/
+mt_finetune/data/
+mt_finetune/data_am/
+mt_finetune/data_gez/
+mt_finetune/logs/
+mt_finetune/*.out
+mt_finetune/*.err

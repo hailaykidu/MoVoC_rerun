@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=60G
+#SBATCH --job-name="papermt_repro_am"
+#SBATCH --output=papermt_repro_train_am.out
+#SBATCH --error=papermt_repro_train_am.err
+#SBATCH --partition=ampere
+#SBATCH --gres=gpu:a100:1
+#SBATCH --time=16:00:00
+
+source /homes/neumann/teklehaymanot/envs/papermt_repro/bin/activate
+
+cd /homes/neumann/teklehaymanot/TigrinyaTokenizer/MoVoC
+
+python -u build_model.py --outdir ./init_model_am --seed 42
+python -u train_mt_am.py --output_dir ./mt_output_am
