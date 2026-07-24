@@ -115,6 +115,8 @@ def main():
     parser.add_argument("--save_steps", type=int, default=500)
     parser.add_argument("--logging_steps", type=int, default=100)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--resume_from_checkpoint", default=None,
+                         help="path to a checkpoint dir to resume from (model/optimizer/scheduler/RNG state)")
     args = parser.parse_args()
 
     logger = setup_logging(args.log_dir)
@@ -163,8 +165,8 @@ def main():
         processing_class=tokenizer,
     )
 
-    logger.info("--- training ---")
-    result = trainer.train()
+    logger.info(f"--- training (resume_from_checkpoint={args.resume_from_checkpoint}) ---")
+    result = trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
     logger.info(f"train result: {result}")
 
     logger.info("--- saving final model ---")

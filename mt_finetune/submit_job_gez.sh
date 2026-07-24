@@ -12,7 +12,7 @@
 
 source /homes/neumann/teklehaymanot/envs/papermt_repro/bin/activate
 
-cd /homes/neumann/teklehaymanot/TigrinyaTokenizer/MoVoC
+cd /homes/neumann/teklehaymanot/TigrinyaTokenizer/MPETokenization/Paralleldata/MoVoC/mt_finetune
 
 python -u build_model.py --outdir ./init_model_gez --seed 42
 python -u train_mt_gez.py --output_dir ./mt_output_gez

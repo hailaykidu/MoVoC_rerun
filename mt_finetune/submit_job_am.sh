@@ -12,7 +12,7 @@
 
 source /homes/neumann/teklehaymanot/envs/papermt_repro/bin/activate
 
-cd /homes/neumann/teklehaymanot/TigrinyaTokenizer/MoVoC
+cd /homes/neumann/teklehaymanot/TigrinyaTokenizer/MPETokenization/Paralleldata/MoVoC/mt_finetune
 
-python -u build_model.py --outdir ./init_model_am --seed 42
-python -u train_mt_am.py --output_dir ./mt_output_am
+# init_model_am/ already exists (built once, seeded, deterministic) -- not rebuilt here.
+python -u train_mt_am.py --output_dir ./mt_output_am --resume_from_checkpoint ./mt_output_am/checkpoint-1000
