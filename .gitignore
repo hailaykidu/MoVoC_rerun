@@ -10,7 +10,7 @@ LLM_Probe/
 # lexicons, an unrelated "cmae" model checkpoint) -- only the real gold
 # morpheme set is part of this project
 data/*
-!data/ሃይላይ_ኪዱ_Tigriyna_Morphem.json
+!data/ሃይላይ ኪዱ_Tigriyna_Morphem.json
 !data/geez_wordlist_hailay_annotated.txt
 !data/Geez_Hailay_Morphem.json
 
