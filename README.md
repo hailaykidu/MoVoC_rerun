@@ -1,11 +1,5 @@
 # MoVoC: Morphology-Aware Subword Vocabulary Construction for Geʿez-Script Languages
 
-Companion code for:
-
-**"MoVoC: Morphology-Aware Subword Construction for Ge'ez Script Languages"**  
-Teklehaymanot, Fazlija, Nejdl  
-arXiv: https://arxiv.org/abs/2509.08812
-
 MoVoC introduces a morphology-aware vocabulary construction approach for
 low-resource Geʿez-script languages. The method combines linguistically
 motivated morpheme units with BPE subword units to construct a hybrid
