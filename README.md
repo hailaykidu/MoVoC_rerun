@@ -14,22 +14,20 @@ and evaluates it against plain BPE using MorphScore and Boundary Precision.
 > README describes what has since been rebuilt and actually runs, with
 > honest labeling of what's real vs. approximated -- see Limitations.
 
- ## What's Real vs. Bootstrapped
+## What's Real vs. Bootstrapped
 
 | Component | Status |
-
-| Amharic/Tigrinya monolingual corpora | **Real** -- reused from the original MoVoC data preparation pipeline (`MoVoC_Tok/02_cleaning/corpus_clean/`). These corpora were used as the basis for vocabulary construction and tokenizer training. |
-| Tigre/Ge'ez monolingual corpora | **Real** -- collected and prepared for this project to extend the evaluation beyond the languages originally considered in the paper. While the original MoVoC experiments focused primarily on Amharic and Tigrinya, this implementation incorporates additional Ge'ez-script languages for broader evaluation. |
-| Additional Ge'ez morphological vocabulary (`data/geez_wordlist_hailay_annotated.txt`) | **Real** -- contains human-provided Ge'ez morphological word forms, including verb paradigms and triliteral root-based derivations. These additional entries expand the available Ge'ez vocabulary and improve morphological coverage for tokenizer training. The data was extracted, validated, and manually checked to ensure consistency before integration into the corpus. |
-| Ge'ez gold morpheme set (`data/Geez_Hailay_Morphem.json`) | **Real** -- a human-annotated morphological dataset containing prefix, root, infix, and suffix information. The dataset was extracted from a linguistically annotated source, validated against manually provided tables, and reconciled into a consistent evaluation resource. However, automatic boundary-based evaluation remains challenging because Ge'ez morphology includes non-concatenative root-and-pattern processes, where surface forms may not directly correspond to simple prefix+root+suffix segmentation. |
-| Tigrinya gold morpheme set (`data/ሃይላይ_ኪዱ_Tigriyna_Morphem.json`) | **Real** -- manually annotated morphological data containing segmented prefix/root/suffix structures. This dataset provides the primary gold-standard evaluation resource because many Tigrinya morphological processes are sufficiently concatenative for automatic boundary-based evaluation. |
-| Tigre gold morphological resources | **Real** -- based on human-annotated morphological examples used for rule development and validation. These resources support evaluation and extension of MoVoC beyond the original language settings. |
-| Amharic morphological resources | **Real** -- obtained from HornMorpho morphological resources and existing linguistic analyses. These resources were used to support Amharic morphological segmentation and vocabulary construction. |
-| Amharic/Tigrinya segmentation rules (`rules/{amharic,tigrinya}_rules.json`) | **Real linguistic resources** -- derived from documented morphological patterns and existing linguistic references. These rules provide the initial segmentation constraints used during vocabulary construction. |
-| Tigre/Ge'ez segmentation rules (`rules/{tigre,geez}_rules.json`) | **Hybrid approach** -- developed using available linguistic resources, manually verified examples, and adaptation from related Ge'ez-script language patterns. These rules are not purely generated automatically; they combine linguistic knowledge with empirical validation. |
-| HornMorpho integration | **Partially used** -- HornMorpho resources were used for Amharic morphological information and existing linguistic resources. The complete HornMorpho pipeline was not directly integrated as the final segmentation engine because MoVoC focuses on morphology-aware tokenizer construction rather than standalone morphological analysis. |
-| MoVoC-Tok constrained-merge BPE (Sec. 3.3 -- the core tokenizer contribution) | **Implemented** -- this project follows the MoVoC-Tok methodology described in the original paper. Instead of applying standard BPE alone, the tokenizer construction combines BPE vocabulary learning with linguistically motivated morpheme units. A hybrid vocabulary is created by integrating BPE subword candidates with morphological units extracted from Amharic and Tigrinya resources. The resulting vocabulary is then used to train the MoVoC-Tok tokenizer. The trained tokenizer is subsequently applied to downstream machine translation experiments using MarianMT models. |
-| Downstream Machine Translation evaluation | **Implemented** -- MoVoC-Tok is evaluated through downstream neural machine translation experiments. MarianMT models are trained using the MoVoC-Tok tokenizer for English→Amharic, English→Tigrinya, English→Ge'ez, and English→Tigre translation directions. The models are evaluated using publicly available benchmark datasets, including OPUS-based evaluation data and Tatoeba datasets, to measure the impact of morphology-aware tokenization on translation performance. |
+|---|---|
+| Amharic/Tigrinya corpora | **Real** — reused from the MoVoC data preparation pipeline and used for vocabulary construction and tokenizer training. |
+| Geʿez/Tigre corpora | **Real** — additional corpora prepared in this project to extend MoVoC evaluation to more Geʿez-script languages. |
+| Geʿez morphological data (`data/Geez_Hailay_Morphem.json`) | **Real** — human-annotated morphological data used for validation. Due to Geʿez root-and-pattern morphology, simple prefix/root/suffix boundary evaluation is limited. |
+| Tigrinya gold morpheme set (`data/ሃይላይ_ኪዱ_Tigriyna_Morphem.json`) | **Real** — manually annotated gold-standard data used for segmentation evaluation. |
+| Tigre morphological resources | **Real** — based on human-annotated examples and linguistic validation. |
+| Amharic morphological resources | **Real** — obtained from HornMorpho and existing linguistic resources. |
+| Segmentation rules | **Hybrid** — combine linguistic resources, manually verified examples, and language-specific adaptations. |
+| HornMorpho usage | **Resource-based** — used mainly for Amharic morphological information; MoVoC does not rely on HornMorpho as the final tokenizer. |
+| MoVoC-Tok tokenizer | **Implemented** — follows the MoVoC approach by combining BPE subword vocabulary with linguistically motivated morpheme units to build a hybrid vocabulary and train the tokenizer. |
+| Downstream MT evaluation | **Implemented** — MoVoC-Tok is evaluated using MarianMT models for English→Amharic, English→Tigrinya, English→Geʿez, and English→Tigre translation tasks using benchmark evaluation datasets. |
 
 ## Proposed Method (mirrors the paper's Section 3 structure)
 
