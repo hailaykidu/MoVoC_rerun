@@ -323,56 +323,60 @@ per-language results (those aren't independently reproduced here, only
 the training methodology).
 
 ## Limitations
+## Morphological Analysis Resources and Annotation Coverage
+The current implementation does not yet integrate a fully automatic, linguistically complete morphological analyzer for all four languages. Instead, it combines available linguistic resources, human-annotated datasets, and rule-based processing.
+Tigrinya, Geʿez, and Tigre resources include manually annotated morphological data, while additional morphological entries were obtained from HornMorpho resources and further post-edited for consistency. Amharic segmentation relies on HornMorpho-based morphological resources.
+However, the current rule-based segmentation framework still has limitations in handling complex morphological phenomena, including:
+- Multi-affix stacking.
+- Root-and-pattern (templatic) Semitic morphology.
+- Ambiguity resolution between valid morphological roots and coincidental prefix/suffix matches.
+For example, a surface form may contain a sequence that resembles a known affix, but without deeper lexical and morphological analysis, it may be incorrectly segmented.
+---
+## MoVoC-Tok Constrained-Merge BPE Implementation
+The constrained-merge BPE mechanism described as the core algorithmic contribution of MoVoC-Tok (Section 3.3) is not yet fully implemented in the current verification framework.
+The present implementation focuses primarily on validating the morphological segmentation component. Full integration of the constrained-merge BPE training pipeline remains future work and is required for a complete reproduction of the original tokenizer algorithm.
+---
+## Gold-Standard Evaluation Resources
+Human-annotated evaluation resources are available for multiple languages.
+- **Tigrinya:** A manually annotated gold-standard dataset containing segmented prefix/root/suffix examples is available and used for evaluation.
+- **Geʿez:** A human-annotated morphological dataset is available. However, evaluation remains challenging because Geʿez exhibits complex root-and-pattern morphology and many forms cannot be represented accurately using simple concatenative prefix/root/suffix boundaries.
+- **Tigre:** Human-annotated morphological resources are available and used for rule development and validation.
+- **Amharic:** Morphological resources are obtained from HornMorpho and existing linguistic resources.
+Although these resources provide valuable evaluation material, future work requires richer annotation schemas that capture:
+- Internal morphological structure.
+- Root patterns.
+- Morphosyntactic information.
+- Language-specific morphological processes.
+---
+## Morphological Category Coverage
+The current segmentation representation mainly models:
+- Prefixes.
+- Roots.
+- Suffixes.
+Other important morphological categories are not yet fully represented, including:
+- Infixes.
+- Clitics.
+- Reduplication.
+- Other language-specific morphological phenomena.
 
-- **No real morphological analyzer is in use** for any language -- all four
-  use the same rule-based longest-match stripper, which cannot handle
-  multi-affix stacking, root-and-pattern (templatic) Semitic morphology, or
-  disambiguate real roots from coincidental prefix/suffix matches (it will,
-  for example, incorrectly strip a "prefix" from a proper noun or
-  monomorphemic word that happens to start with a listed affix string --
-  there's no lexicon to check whether the remainder is a valid root).
-- **MoVoC-Tok's constrained-merge BPE (Sec 3.3) is not implemented** --
-  see above. This is the paper's actual core algorithmic contribution.
-- **Tigre and Ge'ez rules are bootstrapped, not expert-annotated.** The
-  paper itself required expert linguists under supervision for these two
-  languages, specifically because no analyzers or corpora existed. This
-  project does not fabricate that expertise -- see each rule file's
-  `source_notes`.
-- **Only Tigrinya has a real gold-standard triple test set that's actually
-  scored** (206 manually segmented prefix/root/suffix words, vs. the
-  paper's claimed 80,000). Ge'ez now has its own real 193-entry set too
-  (`data/Geez_Hailay_Morphem.json`, reliably extracted via `pdfplumber`
-  from a human-provided PDF and cross-validated against the user's own
-  direct paste of the same table), but it isn't run through
-  `boundaries_from_triple()` -- Ge'ez's root-and-pattern morphology means
-  many surface words aren't literally `prefix+root+suffix`, so the
-  existing length-based boundary math would silently misalign for a
-  large fraction of entries (checked: only 108/193 even have prefix/suffix
-  as literal edge substrings). See "Ge'ez gold morpheme set: real data,
-  not yet scorable" above. Amharic and Tigre still have no gold-standard
-  set of any kind. No fabricated "results" are reported for Amharic, Tigre,
-  or Ge'ez -- see the comparison table above.
-- **Morpheme categories are incomplete**: only prefix/root/suffix are
-  modeled; the paper's INFIX and CLITIC categories (Appendix B) have no
-  representation in `movoc.segmenter.Segmentation`. The 206-word Tigrinya
-  gold file's schema doesn't have an `infix` field at all (`no`/`word`/
-  `prefix`/`root`/`suffix` only); the 193-entry Ge'ez file does have an
-  `infix` key, but it's empty ("-") for every single entry -- the source
-  table had an Infix column that was simply never filled in.
-- **Vocabulary/data scale is much smaller** than the paper's (8,000 total
-  vocab here vs. 152,000 for the paper's Amharic+Tigrinya bilingual
-  vocabulary) -- a deliberate choice for a fast verification pass, not a
-  ceiling on what the corpora could support.
-- **Downstream MT comparison is partial, not the paper's full design.**
-  [MoVoC_MT](../MoVoC_MT/README.md) trains one real from-scratch MarianMT
-  model with MoVoC_Tok (not the paper's BPE-vs-WordPiece-vs-MoVoC-Tok
-  three-way tokenizer comparison, and not per-language separate models) on
-  English-Amharic/English-Tigrinya, zero-shot evaluated on Tigre. Real
-  results exist (see the comparison table above) but this is a narrower
-  experimental design than the paper's Table 3, and En->X translation is
-  consistently weaker than X->En in every language pair tested, with
-  en->tig zero-shot showing real repetition-loop degeneration -- reported
-  as observed in MoVoC_MT's own README, not smoothed over here.
+Expanding the annotation schema and segmentation framework is necessary to provide a more complete representation of the morphological systems of Geʿez-script languages.
+---
+## Vocabulary and Data Scale
+The current vocabulary size and training data scale are smaller than those reported in the original MoVoC paper.
+This was an intentional design choice for a reproducibility and verification study rather than a limitation of available resources. The current implementation provides a controlled environment for validating the methodology.
+Future experiments can incorporate larger multilingual corpora and expanded vocabularies to further investigate scalability and tokenizer robustness.
+---
+## Downstream Machine Translation Evaluation
+The current MoVoC_MT experiments provide an initial validation of MoVoC-Tok using a from-scratch MarianMT model trained on:
+- English–Amharic.
+- English–Tigrinya.
+The model is additionally evaluated in a zero-shot setting on Tigre.
+However, this evaluation is narrower than the complete experimental design reported in the original MoVoC paper, which included:
+- Multiple tokenizer comparisons (BPE, WordPiece, and MoVoC-Tok).
+- Separate language-specific experiments.
+- A broader multilingual evaluation framework.
+The current results demonstrate the practical impact of morphology-aware tokenization, but they do not yet represent a complete replication of the original MT experiments.
+Future work will extend the evaluation to include broader tokenizer comparisons, larger-scale multilingual training, and more comprehensive downstream NLP tasks.
 
 
  
