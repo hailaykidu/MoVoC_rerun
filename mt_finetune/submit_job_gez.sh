@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=30G
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=32G
 #SBATCH --job-name="papermt_repro_gez"
 #SBATCH --output=papermt_repro_train_gez.out
 #SBATCH --error=papermt_repro_train_gez.err
 #SBATCH --partition=ampere
 #SBATCH --gres=gpu:a100:1
-#SBATCH --time=00:30:00
+#SBATCH --time=24:00:00
 
 source /homes/neumann/teklehaymanot/envs/papermt_repro/bin/activate
 
