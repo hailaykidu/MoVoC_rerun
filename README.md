@@ -25,7 +25,7 @@ and evaluates it against plain BPE using MorphScore and Boundary Precision.
 | Tigre morphological resources | **Real** — based on human-annotated examples and linguistic validation. |
 | Amharic morphological resources | **Real** — obtained from HornMorpho and existing linguistic resources. |
 | Segmentation rules | **Hybrid** — combine linguistic resources, manually verified examples, and language-specific adaptations. |
-| HornMorpho usage | **Resource-based** — used mainly for Amharic morphological information; MoVoC does not rely on HornMorpho as the final tokenizer. |
+| HornMorpho usage | **Resource-based ** — used mainly for Amharic morphological information; MoVoC does not rely on [HornMorpho](https://github.com/hltdi/HornMorpho) as the final tokenizer. |
 | MoVoC-Tok tokenizer | **Implemented** — follows the MoVoC approach by combining BPE subword vocabulary with linguistically motivated morpheme units to build a hybrid vocabulary and train the tokenizer. |
 | Downstream MT evaluation | **Implemented** — MoVoC-Tok is evaluated using MarianMT models for English→Amharic, English→Tigrinya, English→Geʿez, and English→Tigre translation tasks using benchmark evaluation datasets. |
 
