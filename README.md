@@ -38,26 +38,21 @@ additional annotated resources and extending the evaluation to four languages.
 
 ---
 
-# Corpus and sources 
+# Corpus and Data Sources
 
-| Languages  | Source |
-|---|---|
-| Amharic corpus | sourced from publiclly available corpus used for vocabulary construction and tokenizer training |
-| Tigrinya corpus | sourced from publiclly available corpus used for vocabulary construction and tokenizer training|
+The following datasets and resources were used throughout the development and evaluation of **MoVoC**.
 
-| Amharic and Tigriyna morphology | Based on HornMorpho resources and linguistic resources with post-editing |
-| Tigrinya morphological gold data | sourced from manually annotated gold-standard segmentation data and from HornMorpho with post editing|
-
-
-| Geʿez morphological data | sourced from human-annotated morphological data, not part of the vocabulary |
-| Tigre morphological resources | sourced from human-annotated examples, not part of the vocabulary |
-
- 
-| MoVoC hybrid vocabulary | created |
-| MoVoC-Tok tokenizer | implemented using hybrid BPE + morpheme vocabulary |
-| Machine Translation evaluation | Implemented using MarianMT models |
-
----
+| **Resource** | **Description** |
+|--------------|-----------------|
+| **Amharic corpus** | Sourced from publicly available corpora used for vocabulary construction and tokenizer training. |
+| **Tigrinya corpus** | Sourced from publicly available corpora used for vocabulary construction and tokenizer training. |
+| **Amharic and Tigrinya morphology** | Based on HornMorpho resources and other linguistic resources, with manual post-editing. |
+| **Tigrinya morphological gold-standard data** | Sourced from manually annotated gold-standard segmentation data and HornMorpho resources, with manual post-editing. |
+| **Geʿez morphological data** | Sourced from manually annotated morphological data. This resource was **not** used for vocabulary construction. |
+| **Tigre morphological resources** | Sourced from manually annotated linguistic examples. This resource was **not** used for vocabulary construction. |
+| **MoVoC hybrid vocabulary** | Constructed by merging token-based and morpheme-based vocabularies from Amharic and Tigrinya. |
+| **MoVoC-Tok tokenizer** | Implemented using a hybrid BPE and morphology-aware vocabulary. |
+| **Machine Translation evaluation** | Conducted using MarianMT models. |
 
 # Method Implementation
 
