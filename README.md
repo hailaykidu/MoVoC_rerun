@@ -38,21 +38,23 @@ additional annotated resources and extending the evaluation to four languages.
 
 ---
 
-# What's Real vs. Constructed
+# Corpus and sources 
 
-| Component | Status |
+| Languages  | Source |
 |---|---|
-| Amharic corpus | Real corpus used for vocabulary construction and tokenizer training |
-| Tigrinya corpus | Real corpus used for vocabulary construction and tokenizer training |
-| Tigre corpus | Real corpus added for extended evaluation |
-| Geʿez corpus | Real corpus expanded with additional manually collected linguistic data |
-| Tigrinya morphological gold data | Real manually annotated gold-standard segmentation data |
-| Geʿez morphological data | Real human-annotated morphological data |
-| Tigre morphological resources | Real human-annotated examples and linguistic validation |
-| Amharic morphology | Based on HornMorpho resources and linguistic resources with post-editing |
-| Segmentation rules | Combination of linguistic resources, annotation, and language-specific adaptation |
-| MoVoC hybrid vocabulary | Implemented |
-| MoVoC-Tok tokenizer | Implemented using hybrid BPE + morpheme vocabulary |
+| Amharic corpus | sourced from publiclly available corpus used for vocabulary construction and tokenizer training |
+| Tigrinya corpus | sourced from publiclly available corpus used for vocabulary construction and tokenizer training|
+
+| Amharic and Tigriyna morphology | Based on HornMorpho resources and linguistic resources with post-editing |
+| Tigrinya morphological gold data | sourced from manually annotated gold-standard segmentation data and from HornMorpho with post editing|
+
+
+| Geʿez morphological data | sourced from human-annotated morphological data, not part of the vocabulary |
+| Tigre morphological resources | sourced from human-annotated examples, not part of the vocabulary |
+
+ 
+| MoVoC hybrid vocabulary | created |
+| MoVoC-Tok tokenizer | implemented using hybrid BPE + morpheme vocabulary |
 | Machine Translation evaluation | Implemented using MarianMT models |
 
 ---
@@ -61,28 +63,24 @@ additional annotated resources and extending the evaluation to four languages.
 
 ## 1. Morphological Analysis and Pre-processing
 
-The original paper uses:
-
 - Corpus normalization and cleaning.
 - Morphological information from linguistic resources.
 - Morpheme-aware vocabulary construction.
-
-This implementation follows the same principle but extends the resources:
+ ### The implementation:
 
 ### Amharic
-
 - Morphological information obtained from HornMorpho and existing linguistic resources.
-- Additional post-processing applied for consistency.
+- Additional post-processing applied for consistency and collected from other sources.
 
 ### Tigrinya
 
-- Human-annotated morphological gold-standard data.
-- Linguistic validation and post-edited morphological resources.
+- Human-annotated morphological gold-standard data collected.
+- Linguistic validation and post-edited morphological resources found from HornMorpho.
 
 ### Tigre
 
 - Human-annotated morphological examples.
-- Linguistic validation used to construct segmentation resources.
+- Linguistic validation used to construct segmentation resources too.
 
 ### Geʿez
 
@@ -93,21 +91,20 @@ This implementation follows the same principle but extends the resources:
 ---
 
 # Gold Morphological Resources
-
-## Tigrinya
+## Tigrinya, Geʿez 
 
 A manually annotated gold-standard dataset is available:
 
 The dataset contains:
-
-- Prefix
-- Root
-- Infix
-- Suffix information
+Language               Prefix   Root     Suffix     Infix     Clitic
+Tigrinya:   ምሕዳራት   ም-       ሓደረ     -ት        –            –
+Amharic:   መምህርነት   መ-       ምህር     -ነት       –            –
+Ge'ez:     እምነት      እ-        አመነ      -ት       –            –
+Tigre:     ኣብይና      ኣ-        ብይ        –        –          -ና
 
 However, Geʿez morphology is highly non-concatenative. Many forms involve
 root-and-pattern alternations, making simple prefix/root/suffix boundary
-evaluation insufficient.
+evaluation insufficient and more work nedeed.
 
 Therefore, Geʿez evaluation requires morphology-aware alignment methods
 beyond simple string-boundary matching.
@@ -116,19 +113,17 @@ beyond simple string-boundary matching.
 
 # MoVoC Vocabulary Construction
 
-The original MoVoC algorithm constructs a hybrid vocabulary:
+The MoVoC algorithm constructs a hybrid vocabulary:
 
 \[
 V_{MoVoC}=V_{BPE}\cup V_{Morpheme}
 \]
 
 where:
-
 - BPE tokens capture frequent subword patterns.
 - Morpheme tokens preserve linguistic structure.
 
-This implementation extends the vocabulary construction from two languages
-(Amharic and Tigrinya in the original paper) to four languages:
+The implementation extends with the vocabulary construction for testing from two languages to four languages:
 
 - Amharic
 - Tigrinya
@@ -137,25 +132,15 @@ This implementation extends the vocabulary construction from two languages
 
 ---
 
-# Vocabulary Configuration
+# MoVoC Vocabulary Construction
 
-Experimental configuration:
-
-| Parameter | Value |
-|---|---:|
-| Languages | 4 |
-| Total vocabulary size | 8,000 |
-| Vocabulary per language | 2,000 |
-| BPE proportion | 70% |
-| Morpheme proportion | 30% |
-| BPE vocabulary per language | 1,400 |
-| Morpheme vocabulary per language | 600 |
-
-The final hybrid vocabulary is created by merging:
-
-BPE vocabulary + Morphological vocabulary
-
-with duplicate tokens removed.
+We first extract **Amharic** and **Tigrinya** words from their respective text corpora.
+Next, we perform both **token-based** and **morpheme-based** segmentation, producing **four distinct vocabularies**:
+- Amharic token-based vocabulary
+- Amharic morpheme-based vocabulary
+- Tigrinya token-based vocabulary
+- Tigrinya morpheme-based vocabulary
+Finally, we merge these four vocabularies into a single **MoVoC-based vocabulary** (**V<sub>MoVoC</sub>**).
 
 ---
 
@@ -164,12 +149,10 @@ with duplicate tokens removed.
 MoVoC-Tok is trained from the hybrid vocabulary.
 
 The tokenizer combines:
-
 - Statistical subword learning from BPE.
 - Linguistic information from morphological units.
 
 The resulting tokenizer aims to reduce:
-
 - Fragmentation of morphological units.
 - Loss of linguistic structure.
 - Inefficient representation of rare words.
@@ -177,51 +160,30 @@ The resulting tokenizer aims to reduce:
 ---
 
 # Downstream Machine Translation Evaluation
-
 The tokenizer is evaluated using MarianMT models.
 
 Experiments include:
-
 ## English → Amharic
-
 Training and evaluation using parallel English-Amharic data.
-
 ## English → Tigrinya
-
 Training and evaluation using parallel English-Tigrinya data.
-
 ## English → Geʿez
-
 Evaluation using English-Classical Geʿez parallel resources.
-
 ## English → Tigre
 
 Evaluation using available Tigre resources.
-
 Evaluation datasets include:
-
 - OPUS-based datasets.
 - Tatoeba datasets.
 - Available benchmark datasets for low-resource translation.
 
 ---
 
-# Data Scale
+# Testing Data Scale
 
-The experiments use the following approximate corpus sizes:
-
-| Language | Clean Corpus |
-|---|---:|
-| Amharic | ~12M sentences |
-| Tigrinya | ~2.6M sentences |
-| Tigre | ~730K sentences |
-| Geʿez | Expanded manually curated corpus |
-
-For verification experiments, subsets are used to reduce computational cost.
-
----
-
-# Repository Structure
+For the testing each language pair to 100 sentence pairs from OPUS and some of them from human annotated datas 
+such as Amharic (100 of 213 available), Tigrinya (74 from OPUS plus 26 human-validated), Tigre (45 from OPUS plus 55
+human-validated), and Ge’ez (100 newly created and validated).
 
 ---
 
@@ -245,33 +207,11 @@ morphosyntactic information.
 ## Morphological Categories
 
 Current segmentation focuses mainly on:
-
-- Prefixes.
-- Roots.
-- Suffixes.
-
-Future extensions will include:
-
-- Infixes.
-- Clitics.
-- Reduplication.
 - Language-specific morphological processes.
-
----
-
-## Vocabulary Scale
-
-The current experiments use an 8K vocabulary for reproducibility and
-efficient verification.
-
-The original paper uses larger vocabulary settings. Future experiments will
-investigate larger-scale vocabulary construction.
-
----
 
 ## Machine Translation Evaluation
 
-Current MT experiments demonstrate the effect of morphology-aware
+The downstream MT experiments demonstrate the effect of morphology-aware
 tokenization.
 
 Future work will include:
@@ -280,17 +220,31 @@ Future work will include:
 - Additional tokenizer comparisons.
 - More extensive benchmark evaluation.
 - Larger-scale language model adaptation.
+- Extending the tokenizer 
 
 ---
 
 # Citation
-
 If you use this repository, please cite:
 
 ```bibtex
-@article{teklehaymanot2025movoc,
-title={MoVoC: Morphology-Aware Subword Construction for Ge'ez Script Languages},
-author={Teklehaymanot, Hailay Kidu and Fazlija, Emir and Nejdl, Wolfgang},
-year={2025},
-journal={arXiv preprint arXiv:2509.08812}
+@inproceedings{teklehaymanot-etal-2025-movoc,
+    title = "{M}o{V}o{C}: Morphology-Aware Subword Construction for {G}e{'}ez Script Languages",
+    author = "Teklehaymanot, Hailay Kidu  and
+      Fazlija, Dren  and
+      Nejdl, Wolfgang",
+    editor = "Christodoulopoulos, Christos  and
+      Chakraborty, Tanmoy  and
+      Rose, Carolyn  and
+      Peng, Violet",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2025",
+    month = nov,
+    year = "2025",
+    address = "Suzhou, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.findings-emnlp.706/",
+    doi = "10.18653/v1/2025.findings-emnlp.706",
+    pages = "13131--13144",
+    ISBN = "979-8-89176-335-7",
+
 }
