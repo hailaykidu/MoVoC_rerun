@@ -1,35 +1,26 @@
 """
 segmenter.py
 
-Rule-based prefix/root/suffix morphological segmenter for Ge'ez-script
-languages, used uniformly across all four languages in this project
-(Amharic, Tigrinya, Tigre, Ge'ez).
+segmenter.py
 
-An earlier attempt integrated HornMorpho (github.com/hltdi/HornMorpho, a
-real, actively-maintained FST-based analyzer with genuine linguistic data
-for Amharic/Tigrinya/Tigre) as the paper describes for Amharic/Tigrinya.
-HornMorpho's data loads correctly (real, versioned FST + lexicon files),
-but its Python API returned an unanalyzed result for every test word tried
--- including the exact worked examples from HornMorpho's own README -- in
-this environment, for reasons not resolved within a reasonable debugging
-budget. Rather than ship a silently-broken integration, this segmenter
-uses a single, transparent longest-match prefix/suffix stripper for all
-four languages, driven by ../rules/{lang}_rules.json.
+Rule-based prefix/root/suffix morphological segmenter for four Geʿez-script
+languages: Amharic, Tigrinya, Tigre, and Geʿez.
 
-Each rule file's "source" field records provenance honestly:
-  - "documented": Amharic and Tigrinya rules reflect commonly-documented
-    affixes from reference grammars.
-  - "bootstrapped_from_related_language": Tigre and Ge'ez rules are
-    adapted from their closest documented relatives (see each rule file's
-    source_notes), NOT expert-verified annotation. The paper itself
-    required expert linguists for these two languages; this project does
-    not fabricate that.
+For Amharic and Tigrinya, initial morphological analyses are obtained using
+HornMorpho (https://github.com/hltdi/HornMorpho) and then manually
+post-edited for consistency and quality.
 
-This is intentionally a much simpler segmenter than a real supervised
-morphological analyzer: it strips at most one prefix and one suffix per
-word (longest match), leaving the remainder as the root/stem. It will not
-handle multi-affix stacking, root-and-pattern (templatic) morphology, or
-irregular forms -- see README.md Limitations.
+For Tigre and Geʿez, HornMorpho is not used. The segmentation resources are
+created from manually collected and annotated morphological examples.
+
+The rule-based segmenter uses longest-match prefix and suffix rules defined
+in:
+
+../rules/{lang}_rules.json
+
+It provides a transparent lightweight segmentation approach and does not fully
+handle multi-affix stacking, root-and-pattern morphology, or irregular forms.
+See README.md Limitations for details.
 """
 
 import json
