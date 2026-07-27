@@ -1,240 +1,218 @@
 # MoVoC: Morphology-Aware Subword Vocabulary Construction for Geʿez-Script Languages
 
-MoVoC introduces a morphology-aware vocabulary construction approach for low-resource Geʿez-script languages. The method combines linguistically motivated morpheme units with BPE subword units to construct a hybrid vocabulary and evaluates its impact on segmentation quality and downstream machine translation.
+[![Paper](https://img.shields.io/badge/ACL%20Anthology-2025.findings--emnlp.706-blue)](https://aclanthology.org/2025.findings-emnlp.706/)
+[![Conference](https://img.shields.io/badge/EMNLP%202025-Findings-b31b1b)](https://2025.emnlp.org/)
+[![License](https://img.shields.io/badge/license-MIT-green)](#license)
 
-This implementation extends the original study from Amharic and Tigrinya to four Geʿez-script languages:
+Official implementation of **MoVoC**, a morphology-aware vocabulary construction method for low-resource Geʿez-script languages. MoVoC combines linguistically motivated morpheme units with Byte Pair Encoding (BPE) subword units into a hybrid vocabulary, and evaluates its impact on tokenization quality and downstream machine translation.
 
-- Amharic
-- Tigrinya
-- Tigre
-- Geʿez
-
-The repository provides:
-
-- Morphological resource integration
-- Hybrid morpheme + BPE vocabulary construction
-- MoVoC-Tok tokenizer training
-- Intrinsic morphological evaluation
-- Downstream MarianMT machine translation experiments
+📄 **Paper:** [MoVoC: Morphology-Aware Subword Construction for Geʿez Script Languages](https://aclanthology.org/2025.findings-emnlp.706/) (Findings of ACL: EMNLP 2025)
 
 ---
 
-# Overview
+## Table of Contents
 
-The original MoVoC paper focuses on:
+- [Overview](#overview)
+- [Repository Contents](#repository-contents)
+- [Installation](#installation)
+- [Data and Resources](#data-and-resources)
+- [Methodology](#methodology)
+  - [Supervised Morphological Analysis](#31-pre-tokenization-and-supervised-morphological-analysis)
+  - [Vocabulary Construction](#32-vocabulary-construction-movoc)
+  - [MoVoC-Tok Segmentation](#33-movoc-tok-morpheme-aware-subword-segmentation)
+- [Experimental Setup](#experimental-setup)
+- [Evaluation Framework](#evaluation-framework)
+- [Reproducibility](#reproducibility)
+- [Citation](#citation)
+- [License](#license)
+- [Contact](#contact)
+
+---
+
+## Overview
+
+Subword tokenization methods such as BPE often fragment morphologically rich words, especially in low-resource languages. **MoVoC** addresses this limitation by incorporating morphological knowledge directly into vocabulary construction.
+
+The framework combines:
 
 1. Linguistically informed morphological analysis.
 2. Morphology-aware vocabulary construction.
-3. Hybrid tokenization combining morphemes and subwords.
+3. Hybrid tokenization using morpheme and subword units.
 4. Evaluation on low-resource Geʿez-script languages.
 
-This repository reproduces and extends the methodology by incorporating additional annotated resources and extending the evaluation to four languages.
+Vocabulary construction and downstream experiments focus on:
+
+- **Amharic**
+- **Tigrinya**
+
+Additional human-annotated morphological resources from **Geʿez** and **Tigre** are used for morphological evaluation.
 
 ---
 
-# Corpus and Data Sources
+## Repository Contents
 
-The following datasets and resources were used throughout the development and evaluation of **MoVoC**.
+This repository provides:
 
-| **Resource** | **Description** |
-|--------------|-----------------|
-| **Amharic corpus** | Sourced from publicly available corpora used for vocabulary construction and tokenizer training. |
-| **Tigrinya corpus** | Sourced from publicly available corpora used for vocabulary construction and tokenizer training. |
-| **Amharic and Tigrinya morphology** | Based on HornMorpho resources and other linguistic resources, with manual post-editing. |
-| **Tigrinya morphological gold-standard data** | Sourced from manually annotated gold-standard segmentation data and HornMorpho resources, with manual post-editing. |
-| **Geʿez morphological data** | Sourced from manually annotated morphological data. This resource was **not** used for vocabulary construction. |
-| **Tigre morphological resources** | Sourced from manually annotated linguistic examples. This resource was **not** used for vocabulary construction. |
-| **MoVoC hybrid vocabulary** | Constructed by merging token-based and morpheme-based vocabularies from Amharic and Tigrinya. |
-| **MoVoC-Tok tokenizer** | Implemented using a hybrid BPE and morphology-aware vocabulary. |
-| **Machine Translation evaluation** | Conducted using MarianMT models. |
+- Supervised morphological analysis pipeline
+- Hybrid morpheme + BPE vocabulary construction
+- **MoVoC-Tok** — morpheme-aware subword segmentation
+- Morphological evaluation scripts
+- Machine translation fine-tuning and evaluation experiments
 
 ---
 
-# Method Implementation
+## Installation
 
-## 1. Morphological Analysis and Pre-processing
-
-- Corpus normalization and cleaning.
-- Morphological information from linguistic resources.
-- Morpheme-aware vocabulary construction.
-
-### The implementation
-
-### Amharic
-
-- Morphological information obtained from HornMorpho and existing linguistic resources.
-- Additional post-processing was applied for consistency and supplemented with data collected from other sources.
-
-### Tigrinya
-
-- Human-annotated morphological gold-standard data were collected.
-- Linguistically validated and post-edited morphological resources from HornMorpho.
-
-### Tigre
-
-- Human-annotated morphological examples.
-- Linguistic validation was used to construct segmentation resources.
-
-### Geʿez
-
-- Human-annotated morphological resources.
-- Additional manually collected lexical and morphological examples.
-- Evaluation considers the complexity of Geʿez root-and-pattern morphology.
-
----
-
-# Gold Morphological Resources
-
-## Tigrinya, Geʿez
-
-A manually annotated gold-standard dataset is available.
-
-The dataset contains:
-
-| Language | Word | Prefix | Root | Suffix | Infix | Clitic |
-|----------|------|--------|------|---------|--------|---------|
-| Tigrinya | ምሕዳራት | ም- | ሓደረ | -ት | – | – |
-| Amharic | መምህርነት | መ- | ምህር | -ነት | – | – |
-| Geʿez | እምነት | እ- | አመነ | -ት | – | – |
-| Tigre | ኣብይና | ኣ- | ብይ | – | – | -ና |
-
-However, Geʿez morphology is highly non-concatenative. Many forms involve root-and-pattern alternations, making simple prefix/root/suffix boundary evaluation insufficient, and more work is needed.
-
-Therefore, Geʿez evaluation requires morphology-aware alignment methods beyond simple string-boundary matching.
-
----
-
-# MoVoC Vocabulary Construction
-
-The MoVoC algorithm constructs a hybrid vocabulary:
-
-```text
-V_MoVoC = V_BPE ∪ V_Morpheme
+```bash
+git clone https://github.com/<org>/MoVoC.git
+cd MoVoC
+pip install -r requirements.txt
 ```
 
-where:
-
-- BPE tokens capture frequent subword patterns.
-- Morpheme tokens preserve linguistic structure.
-
-The implementation extends vocabulary construction for testing from two languages to four languages:
-
-- Amharic
-- Tigrinya
-- Tigre
-- Geʿez
+> Requires Python 3.9+. Core dependencies include the Hugging Face `tokenizers` and `transformers` libraries.
 
 ---
 
-# MoVoC Vocabulary Construction
+## Data and Resources
 
-We first extract **Amharic** and **Tigrinya** words from their respective text corpora.
+| Resource | Description |
+|----------|-------------|
+| **Amharic corpus** | Publicly available corpus used for vocabulary construction and tokenizer training. |
+| **Tigrinya corpus** | Publicly available corpus used for vocabulary construction and tokenizer training. |
+| **Amharic and Tigrinya morphology** | Based on HornMorpho resources and additional linguistic resources with manual post-editing. |
+| **Tigrinya morphological gold-standard data** | Manually annotated segmentation data combined with HornMorpho resources. |
+| **Geʿez morphological data** | Human-annotated morphological data used for morphological evaluation. |
+| **Tigre morphological resources** | Human-annotated morphological examples used for evaluation purposes. |
 
-Next, we perform both **token-based** and **morpheme-based** segmentation, producing four distinct vocabularies:
+**External data sources:**
 
-- Amharic token-based vocabulary
-- Amharic morpheme-based vocabulary
-- Tigrinya token-based vocabulary
-- Tigrinya morpheme-based vocabulary
-
-Finally, we merge these four vocabularies into a single **MoVoC-based vocabulary** (**V_MoVoC**).
-
----
-
-# MoVoC-Tok Tokenizer
-
-MoVoC-Tok is trained from the hybrid vocabulary.
-
-The tokenizer combines:
-
-- Statistical subword learning from BPE.
-- Linguistic information from morphological units.
-
-The resulting tokenizer aims to reduce:
-
-- Fragmentation of morphological units.
-- Loss of linguistic structure.
-- Inefficient representation of rare words.
+- **[HornMorpho](https://github.com/hltdi/HornMorpho)** — supervised morphological analysis and morpheme annotation resources (Amharic and Tigrinya only).
+- **[NLLB (No Language Left Behind)](https://github.com/facebookresearch/fairseq/tree/nllb)** (Costa-Jussà et al., 2022) — Amharic and Tigrinya BPE vocabulary construction and parallel data for MT **fine-tuning**. NLLB is not used for evaluation.
+- **[Stopes](https://github.com/facebookresearch/stopes)** — NLLB data-mining toolkit, used for mined multilingual parallel corpora.
+- **[FLORES-200](https://github.com/facebookresearch/flores)** (Goyal et al., 2022) — used for **evaluation** (dev/test sets), Amharic and Tigrinya only.
+- **[OPUS](https://opus.nlpl.eu/)** (Tiedemann, 2012) — used for **evaluation** across all four languages (Amharic, Tigrinya, Tigre, Geʿez), since Geʿez and Tigre are not covered by FLORES-200 or NLLB.
 
 ---
 
-# Downstream Machine Translation Evaluation
+## Methodology
 
-The tokenizer is evaluated using MarianMT models.
+### 3.1. Pre-tokenization and Supervised Morphological Analysis
 
-Experiments include:
+The MoVoC pipeline begins with corpus preprocessing and supervised morphological analysis:
 
-## English → Amharic
+- Corpus normalization and cleaning.
+- Morphological segmentation (via **HornMorpho** for Amharic and Tigrinya).
+- Extraction of morpheme units from linguistic resources, with manual post-editing applied to additional resources.
 
-Training and evaluation using parallel English–Amharic data.
+The resulting morphological information provides the basis for constructing a morphology-aware vocabulary.
 
-## English → Tigrinya
+### 3.2. Vocabulary Construction (MoVoC)
 
-Training and evaluation using parallel English–Tigrinya data.
+MoVoC constructs a hybrid vocabulary by combining BPE subword units and morpheme units:
 
-## English → Geʿez
+```text
+V_MoVoC = V_BPE,am ∪ V_BPE,ti ∪ V_morpheme,am ∪ V_morpheme,ti
+```
 
-Evaluation using English–Classical Geʿez parallel resources.
+where `V_BPE` denotes BPE subword units and `V_morpheme` denotes morphology-aware units.
 
-## English → Tigre
+**Construction process:**
 
-Evaluation using available Tigre resources.
+1. Perform morphological segmentation on Amharic and Tigrinya corpora.
+2. Train BPE models on the corresponding corpora.
+3. Extract morpheme units from segmented data.
+4. Combine BPE and morpheme vocabularies into the final MoVoC vocabulary.
 
-Evaluation datasets include:
+### 3.3. MoVoC-Tok (Morpheme-Aware Subword Segmentation)
 
-- OPUS-based datasets.
-- Tatoeba datasets.
-- Available benchmark datasets for low-resource translation.
+**MoVoC-Tok** integrates morphological boundaries into the BPE segmentation process. Unlike standard BPE, it restricts merge operations so generated subword units do not cross valid morpheme boundaries. This:
 
----
-
-# Testing Data Scale
-
-For testing, each language pair includes 100 sentence pairs from OPUS and, where necessary, human-annotated data, as follows:
-
-- Amharic: 100 of 213 available sentence pairs from OPUS.
-- Tigrinya: 74 sentence pairs from OPUS plus 26 human-validated sentence pairs.
-- Tigre: 45 sentence pairs from OPUS plus 55 human-validated sentence pairs.
-- Geʿez: 100 newly created and manually validated sentence pairs.
+- Preserves morphological structure.
+- Reduces invalid subword merges.
+- Maintains the flexibility of subword tokenization.
 
 ---
 
-# Limitations and Future Work
+## Experimental Setup
 
-## Morphological Complexity
+### Target Languages
 
-Although the current system integrates real linguistic resources and human annotations, several challenges remain:
+**Vocabulary construction and MoVoC-Tok training** focus on two Geʿez-script languages — **Amharic** and **Tigrinya**. The **downstream evaluation**, however, extends to four languages: **Amharic**, **Tigrinya**, **Tigre**, and **Geʿez**.
 
-- Complex multi-affix stacking.
-- Root-and-pattern morphology.
-- Morphological ambiguity.
-- Lexical disambiguation.
+### Dataset Details
 
-Future work will incorporate richer morphological analyzers and morphosyntactic information.
+**Training data:**
+- Amharic and Tigrinya corpora for BPE training.
+- HornMorpho-based resources for morphological information (Amharic and Tigrinya only).
+
+**Fine-tuning data (machine translation):**
+- English–Amharic and English–Tigrinya parallel corpora from the **NLLB** project (Costa-Jussà et al., 2022), mined and released by Meta AI.
+
+**Evaluation data:**
+- **Amharic and Tigrinya:** both languages are directly supported by **FLORES-200** (Goyal et al., 2022). We use the corresponding development and test sets for automatic evaluation using **BLEU** (Papineni et al., 2002) and **chrF++** (Popović, 2017).
+- **Geʿez and Tigre:** since neither language is included in the FLORES-200 benchmark, nor part of the NLLB fine-tuning data (Costa-Jussà et al., 2022), we use 100 sentence pairs from the **OPUS** parallel corpus (Tiedemann, 2012) as the final evaluation set, applied consistently across all four languages for comparability.
+
+**Test data composition (extrinsic evaluation):**
+
+Extrinsic evaluation uses an unseen subset of the first 100 sentence pairs from OPUS (Tiedemann, 2012) for each target language. To balance the evaluation set at 100 pairs per language:
+
+| Language | Test set composition | Extrinsic (MT) evaluation |
+|---|---|---|
+| Amharic | 100 of 213 available OPUS pairs | ✓ |
+| Tigrinya | 74 from OPUS + 26 human-validated | ✓ |
+| Tigre | 45 from OPUS + 55 human-validated | ✓ |
+| Geʿez | 100 newly created and human-validated | ✗ — no parallel data available |
+
+Because no parallel data exists for Geʿez, it is evaluated **intrinsically only**.
+
+**Intrinsic evaluation data:**
+- All four languages (Amharic, Tigrinya, Tigre, Geʿez) are evaluated against our annotated morpheme test set, designed to assess segmentation quality.
+- This same annotated morphological data also supports tokenizer training for Amharic and Tigrinya.
+
+### Training Setup and Configuration
+
+- MoVoC-Tok is trained using the Hugging Face `tokenizers` library.
+- Training includes: BPE model training for Amharic and Tigrinya → integration of morpheme-aware vocabulary units → construction of the final MoVoC vocabulary → training of the MoVoC-Tok tokenizer on the hybrid vocabulary.
+- Downstream evaluation fine-tunes **MarianMT** models using English–Amharic and English–Tigrinya parallel corpora.
 
 ---
 
-## Morphological Categories
+## Evaluation Framework
 
-Current segmentation focuses mainly on:
+MoVoC is evaluated using both intrinsic and extrinsic settings.
 
-- Language-specific morphological processes.
+### Intrinsic Evaluation
 
-## Machine Translation Evaluation
+Measures the quality of morphology-aware tokenization against annotated morphological resources:
 
-The downstream MT experiments demonstrate the effect of morphology-aware tokenization.
+- Morpheme boundary preservation.
+- Morphological segmentation quality.
+- Vocabulary consistency.
 
-Future work will include:
+### Extrinsic Evaluation: Machine Translation
 
-- Larger multilingual training.
-- Additional tokenizer comparisons.
-- More extensive benchmark evaluation.
-- Larger-scale language model adaptation.
-- Extending the tokenizer.
+Evaluates the downstream effect of MoVoC-Tok on:
+
+- English ↔ Amharic
+- English ↔ Tigrinya
+- English ↔ Tigre
+
+using standard automatic metrics: **BLEU** (Papineni et al., 2002) and **chrF++** (Popović, 2017). Amharic and Tigrinya are evaluated on FLORES-200 (Goyal et al., 2022); Tigre is evaluated on the 100-pair OPUS test set described above. **Geʿez has no available parallel data and is therefore excluded from extrinsic evaluation**, relying solely on the intrinsic morpheme test set. The comparison contrasts standard subword tokenization (BPE, WordPiece) against MoVoC-Tok's morphology-aware segmentation. Full results are reported in the paper.
 
 ---
 
-# Citation
+## Reproducibility
+
+This repository provides everything needed to reproduce the vocabulary construction and tokenizer evaluation experiments from the paper:
+
+- Data processing scripts
+- Vocabulary construction pipeline
+- MoVoC-Tok tokenizer implementation
+- Training and evaluation configurations
+
+---
+
+## Citation
 
 If you use this repository, please cite:
 
@@ -244,18 +222,31 @@ If you use this repository, please cite:
     author = "Teklehaymanot, Hailay Kidu and
       Fazlija, Dren and
       Nejdl, Wolfgang",
-    editor = "Christodoulopoulos, Christos and
-      Chakraborty, Tanmoy and
-      Rose, Carolyn and
-      Peng, Violet",
     booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2025",
-    month = nov,
     year = "2025",
-    address = "Suzhou, China",
-    publisher = "Association for Computational Linguistics",
-    url = "https://aclanthology.org/2025.findings-emnlp.706/",
-    doi = "10.18653/v1/2025.findings-emnlp.706",
     pages = "13131--13144",
-    ISBN = "979-8-89176-335-7",
+    publisher = "Association for Computational Linguistics",
+    doi = "10.18653/v1/2025.findings-emnlp.706",
+    url = "https://aclanthology.org/2025.findings-emnlp.706/"
 }
 ```
+
+---
+
+## References
+
+- Costa-Jussà, M. R., et al. (2022). *No Language Left Behind: Scaling Human-Centered Machine Translation.* NLLB Team, arXiv:2207.04672.
+- Goyal, N., Gao, C., Chaudhary, V., Chen, P.-J., Wenzek, G., Ju, D., Krishnan, S., Ranzato, M., Guzmán, F., & Fan, A. (2022). *The Flores-101 Evaluation Benchmark for Low-Resource and Multilingual Machine Translation.* Transactions of the Association for Computational Linguistics, 10, 522–538.
+- Papineni, K., Roukos, S., Ward, T., & Zhu, W.-J. (2002). *BLEU: a Method for Automatic Evaluation of Machine Translation.* Proceedings of the 40th Annual Meeting of the ACL, 311–318.
+- Popović, M. (2017). *chrF++: words helping character n-grams.* Proceedings of the Second Conference on Machine Translation, 612–618.
+- Tiedemann, J. (2012). *Parallel Data, Tools and Interfaces in OPUS.* Proceedings of LREC 2012.
+
+---
+
+## License
+
+[Specify license here, e.g. MIT / Apache 2.0]
+
+## Contact
+
+For questions about the paper or code, please open an issue or contact **Hailay Kidu Teklehaymanot**.
